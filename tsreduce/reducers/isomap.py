@@ -7,11 +7,37 @@ from ._utils import pad_or_trim
 
 
 class Isomap(BaseReducer):
-    """Per-channel geodesic manifold embedding.
+    """Per-channel geodesic manifold embedding (Isomap).
 
-    Fits sklearn Isomap on each channel. *n_neighbors* defaults to
-    ``sqrt(n_samples)``; the component count is backed off automatically if
-    the geodesic distance matrix has significant negative eigenvalues.
+    Fits :class:`sklearn.manifold.Isomap` independently on each channel.
+    ``n_neighbors`` defaults to ``sqrt(n_samples)`` when not supplied. The
+    component count is backed off automatically if the geodesic distance
+    matrix yields significant negative eigenvalues, ensuring a valid embedding.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Number of embedding dimensions per channel. Mutually exclusive with
+        ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of dimensions to retain. Mutually exclusive with
+        ``target_len``.
+    n_neighbors : int or None, default=None
+        Number of neighbours for the geodesic graph. Defaults to
+        ``max(2, int(sqrt(n_samples)))`` when ``None``.
+
+    Attributes
+    ----------
+    estimators_ : list of sklearn.manifold.Isomap
+        Fitted Isomap estimator for each channel.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from tsreduce import Isomap
+    >>> X = np.random.randn(50, 200)
+    >>> Isomap(target_len=10).fit_transform(X).shape
+    (50, 10)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None, n_neighbors=None):

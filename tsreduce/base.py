@@ -8,11 +8,59 @@ from sklearn.utils.validation import check_is_fitted
 
 
 class BaseReducer(BaseEstimator, TransformerMixin):
-    """Abstract base for time-series dimensionality reducers.
+    """Abstract base class for time-series dimensionality reducers.
 
-    Exactly one of *target_len* or *retention_rate* must be supplied.
-    Subclasses only need to implement :meth:`_fit` and :meth:`_transform`;
-    shape normalisation, timing, and validation are handled here.
+    Provides a unified sklearn-compatible interface for all reducers in the
+    library. Subclasses only need to implement :meth:`_fit` and
+    :meth:`_transform`; input validation, shape normalisation, and timing are
+    handled here.
+
+    Exactly one of ``target_len`` or ``retention_rate`` must be supplied at
+    construction time.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Desired length of the output series (number of timepoints to keep).
+        Must be a positive integer and cannot exceed the input series length.
+        Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of timepoints to retain, in the range ``(0, 1]``.
+        The effective output length is ``max(1, round(n_timepoints * retention_rate))``.
+        Mutually exclusive with ``target_len``.
+    verbose : bool, default=False
+        Whether to display a progress bar during fitting. Only relevant for
+        iterative reducers (e.g. deep learning models); stateless reducers
+        ignore this parameter.
+
+    Attributes
+    ----------
+    n_timepoints_in_ : int
+        Number of timepoints in the series seen during :meth:`fit`.
+    n_channels_in_ : int
+        Number of channels in the data seen during :meth:`fit`.
+    n_timepoints_out_ : int
+        Number of timepoints in the reduced output series.
+    retention_rate_ : float
+        Fraction of timepoints actually retained after fitting, computed as
+        ``n_timepoints_out_ / n_timepoints_in_``. Always available after fit,
+        regardless of which constructor parameter was used.
+    fit_time_ : float
+        Wall-clock time (in seconds) spent in :meth:`_fit`.
+    transform_time_ : float
+        Wall-clock time (in seconds) spent in the last call to :meth:`_transform`.
+
+    Examples
+    --------
+    Subclasses are instantiated like any sklearn transformer:
+
+    >>> import numpy as np
+    >>> from tsreduce import PAA
+    >>> X = np.random.randn(10, 200)  # 10 series of length 200
+    >>> paa = PAA(target_len=50)
+    >>> X_reduced = paa.fit_transform(X)
+    >>> X_reduced.shape
+    (10, 50)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None, verbose: bool = False):
@@ -43,6 +91,22 @@ class BaseReducer(BaseEstimator, TransformerMixin):
     # ------------------------------------------------------------------
 
     def fit(self, X, y=None):
+        """Fit the reducer to the training data.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_timepoints) or \
+(n_samples, n_channels, n_timepoints)
+            Input time series. 2-D arrays are treated as single-channel.
+        y : array-like of shape (n_samples,), optional
+            Target labels. Ignored by unsupervised reducers; forwarded to
+            supervised subclasses.
+
+        Returns
+        -------
+        self : BaseReducer
+            Fitted reducer.
+        """
         X_3d = self._validate_and_reshape(X)
         n_samples, n_channels, n_timepoints = X_3d.shape
 
@@ -69,6 +133,21 @@ class BaseReducer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
+        """Reduce the time series using the fitted reducer.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_timepoints) or \
+(n_samples, n_channels, n_timepoints)
+            Input time series. Must have the same number of channels and
+            timepoints as the data passed to :meth:`fit`.
+
+        Returns
+        -------
+        X_reduced : ndarray of shape (n_samples, ``n_timepoints_out_``) or \
+(n_samples, n_channels, ``n_timepoints_out_``)
+            Reduced time series. Returns 2-D if the input was 2-D, 3-D otherwise.
+        """
         check_is_fitted(self, "n_timepoints_out_")
 
         was_2d = X.ndim == 2

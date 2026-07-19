@@ -7,11 +7,36 @@ from ._utils import pad_or_trim, rank_capped_components
 
 
 class PCA(BaseReducer):
-    """Per-channel Principal Component Analysis.
+    """Per-channel Principal Component Analysis (PCA).
 
-    Fits a separate sklearn PCA on each channel of the training set and projects
-    it onto its top principal components. The number of components is capped at
-    the rank of the channel matrix.
+    Fits an independent :class:`sklearn.decomposition.PCA` on each channel of
+    the training set and projects each series onto its top principal components.
+    The component count is capped at the rank of the channel matrix to avoid
+    degenerate decompositions.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Number of principal components to retain per channel. Mutually
+        exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of components to retain. Mutually exclusive with
+        ``target_len``.
+    random_state : int or None, default=None
+        Random seed passed to :class:`sklearn.decomposition.PCA`.
+
+    Attributes
+    ----------
+    estimators_ : list of sklearn.decomposition.PCA
+        Fitted PCA estimator for each channel.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from tsreduce import PCA
+    >>> X = np.random.randn(50, 200)
+    >>> PCA(target_len=20).fit_transform(X).shape
+    (50, 20)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None, random_state=None):

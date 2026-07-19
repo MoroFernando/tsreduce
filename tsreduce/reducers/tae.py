@@ -58,11 +58,48 @@ def _build_model(input_dim, target_len, dropout, d_model=32, n_heads=4, num_laye
 
 
 class TAE(BaseReducer):
-    """Transformer autoencoder with sinusoidal positional encoding.
+    """Transformer Autoencoder (TAE) with sinusoidal positional encoding.
 
-    A Transformer encoder with adaptive average pooling compresses the sequence
-    to *n_timepoints_out_* steps; a symmetric Transformer decoder reconstructs
-    the original length for the reconstruction loss.
+    Projects each timepoint to a ``d_model``-dimensional embedding, adds
+    sinusoidal positional encodings, and passes the sequence through a
+    Transformer encoder. Adaptive average pooling then compresses the sequence
+    to ``n_timepoints_out_`` steps. A symmetric Transformer decoder
+    reconstructs the original length for the MSE reconstruction loss.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Latent sequence length. Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of timepoints to retain. Mutually exclusive with
+        ``target_len``.
+    epochs : int, default=50
+        Number of training epochs.
+    lr : float, default=1e-3
+        Learning rate for the Adam optimiser.
+    batch_size : int, default=32
+        Mini-batch size.
+    dropout : float, default=0.1
+        Dropout probability in Transformer layers.
+    verbose : bool, default=False
+        Whether to display a tqdm progress bar during training.
+    random_state : int or None, default=None
+        Random seed for reproducibility.
+
+    Attributes
+    ----------
+    model_ : torch.nn.Module
+        Fitted Transformer autoencoder.
+    device_ : torch.device
+        Device used for training (CPU or CUDA).
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from tsreduce import TAE
+    >>> X = np.random.randn(50, 200)
+    >>> TAE(target_len=20, epochs=5).fit_transform(X).shape
+    (50, 20)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None,

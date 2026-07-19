@@ -85,12 +85,49 @@ def _build_model(input_dim, target_len, dropout, queue_size=5000, temperature=0.
 
 
 class CCNN(BaseReducer):
-    """Contrastive CNN with a nearest-neighbour feature queue.
+    """Contrastive CNN (CCNN) with a nearest-neighbour feature queue.
 
-    A convolutional encoder is trained by aligning each augmented view with the
-    nearest neighbour retrieved from a momentum feature queue, using symmetric
-    cross-entropy contrastive loss. The queue accumulates normalised features
-    across batches.
+    A three-layer Conv1d encoder is trained contrastively: each series is
+    augmented twice (Gaussian noise + dropout), and both views are aligned with
+    their nearest neighbour retrieved from a momentum feature queue via
+    symmetric cross-entropy loss. The queue accumulates normalised projected
+    features across batches, providing a diverse set of negatives without
+    requiring large batch sizes.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Latent sequence length. Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of timepoints to retain. Mutually exclusive with
+        ``target_len``.
+    epochs : int, default=50
+        Number of training epochs.
+    lr : float, default=1e-3
+        Learning rate for the Adam optimiser.
+    batch_size : int, default=32
+        Mini-batch size.
+    dropout : float, default=0.1
+        Dropout probability in the encoder.
+    verbose : bool, default=False
+        Whether to display a tqdm progress bar during training.
+    random_state : int or None, default=None
+        Random seed for reproducibility.
+
+    Attributes
+    ----------
+    model_ : torch.nn.Module
+        Fitted contrastive CNN encoder.
+    device_ : torch.device
+        Device used for training (CPU or CUDA).
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from tsreduce import CCNN
+    >>> X = np.random.randn(50, 200)
+    >>> CCNN(target_len=20, epochs=5).fit_transform(X).shape
+    (50, 20)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None,

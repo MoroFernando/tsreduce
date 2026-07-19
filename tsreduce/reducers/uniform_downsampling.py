@@ -7,8 +7,24 @@ from ..base import BaseReducer
 class UniformDownsampling(BaseReducer):
     """Uniform index sampling along the time axis.
 
-    Picks *n_timepoints_out_* linearly-spaced indices from each series. No
-    smoothing or averaging — just index selection. Stateless — fit is a no-op.
+    Selects ``n_timepoints_out_`` linearly-spaced indices from each series
+    using :func:`numpy.linspace`. No smoothing or averaging is applied —
+    this is pure index selection. Stateless — :meth:`fit` is a no-op.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Number of samples to keep. Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of samples to keep. Mutually exclusive with ``target_len``.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from tsreduce import UniformDownsampling
+    >>> X = np.random.randn(10, 200)
+    >>> UniformDownsampling(target_len=50).fit_transform(X).shape
+    (10, 50)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None):

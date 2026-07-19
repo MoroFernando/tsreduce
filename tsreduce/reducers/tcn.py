@@ -66,12 +66,57 @@ def _build_model(input_dim, target_len, n_filters, kernel_size, n_levels, latent
 
 
 class TCN(BaseReducer):
-    """Temporal Convolutional Network autoencoder.
+    """Temporal Convolutional Network autoencoder (TCN).
 
-    Causal dilated residual blocks encode the series; adaptive average pooling
-    compresses the latent to *n_timepoints_out_* steps. The latent sign is
-    corrected at transform time to stay aligned with a uniform subsample of the
-    original, preventing orientation flips across runs.
+    A stack of causal dilated residual TCN blocks encodes the series with
+    exponentially increasing receptive fields (dilation = 2^i per level).
+    Adaptive average pooling compresses the latent to ``n_timepoints_out_``
+    steps; a symmetric TCN decoder reconstructs the original for the MSE loss.
+    The latent sign is corrected at transform time to stay aligned with a
+    uniform subsample of the input, preventing orientation flips across runs.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Latent sequence length. Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of timepoints to retain. Mutually exclusive with
+        ``target_len``.
+    n_filters : int, default=20
+        Number of filters in each TCN block.
+    kernel_size : int, default=20
+        Convolutional kernel size in each TCN block.
+    n_levels : int, default=5
+        Number of TCN blocks in the encoder (and decoder).
+    latent_channels : int, default=8
+        Number of channels in the latent feature map.
+    dropout : float, default=0.2
+        Dropout probability in TCN blocks.
+    epochs : int, default=50
+        Number of training epochs.
+    lr : float, default=1e-3
+        Learning rate for the Adam optimiser.
+    batch_size : int, default=32
+        Mini-batch size.
+    verbose : bool, default=False
+        Whether to display a tqdm progress bar during training.
+    random_state : int or None, default=None
+        Random seed for reproducibility.
+
+    Attributes
+    ----------
+    model_ : torch.nn.Module
+        Fitted TCN autoencoder.
+    device_ : torch.device
+        Device used for training (CPU or CUDA).
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from tsreduce import TCN
+    >>> X = np.random.randn(50, 200)
+    >>> TCN(target_len=20, epochs=5).fit_transform(X).shape
+    (50, 20)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None,

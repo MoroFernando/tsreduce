@@ -7,11 +7,42 @@ from ._utils import pad_or_trim, rank_capped_components
 
 
 class KPCA(BaseReducer):
-    """Per-channel Kernel PCA.
+    """Per-channel Kernel PCA (KPCA).
 
-    Applies a non-linear embedding independently to each channel using sklearn's
-    KernelPCA. Defaults to the RBF kernel; *gamma* is inferred by sklearn when
-    not supplied. The component count is capped at the channel matrix rank.
+    Applies a non-linear manifold embedding independently to each channel using
+    :class:`sklearn.decomposition.KernelPCA`. Defaults to the RBF kernel;
+    ``gamma`` is inferred by sklearn when not supplied. The component count is
+    capped at the channel matrix rank.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Number of kernel components to retain per channel. Mutually exclusive
+        with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of components to retain. Mutually exclusive with
+        ``target_len``.
+    kernel : str, default='rbf'
+        Kernel function, as accepted by
+        :class:`sklearn.decomposition.KernelPCA`.
+    gamma : float or None, default=None
+        Kernel coefficient for ``'rbf'``, ``'poly'``, and ``'sigmoid'``
+        kernels. Inferred by sklearn when ``None``.
+    random_state : int or None, default=None
+        Random seed for reproducibility.
+
+    Attributes
+    ----------
+    estimators_ : list of sklearn.decomposition.KernelPCA
+        Fitted KPCA estimator for each channel.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from tsreduce import KPCA
+    >>> X = np.random.randn(50, 200)
+    >>> KPCA(target_len=20).fit_transform(X).shape
+    (50, 20)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None,

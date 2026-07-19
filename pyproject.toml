@@ -18,3 +18,10 @@ dependencies = [
     "torch>=2.0",
     "tqdm>=4.0",
 ]
+
+[project.optional-dependencies]
+docs = [
+    "sphinx>=7.0",
+    "pydata-sphinx-theme>=0.15",
+    "sphinx-autodoc-typehints>=1.25",
+]
