@@ -21,7 +21,6 @@ class DFT(BaseReducer):
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import DFT
     >>> X = np.random.randn(10, 200)
     >>> DFT(target_len=50).fit_transform(X).shape

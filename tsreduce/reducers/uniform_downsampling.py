@@ -20,7 +20,6 @@ class UniformDownsampling(BaseReducer):
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import UniformDownsampling
     >>> X = np.random.randn(10, 200)
     >>> UniformDownsampling(target_len=50).fit_transform(X).shape

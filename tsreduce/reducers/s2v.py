@@ -104,16 +104,9 @@ class S2V(BaseReducer):
     random_state : int or None, default=None
         Random seed for reproducibility.
 
-    Attributes
-    ----------
-    model_ : torch.nn.Module
-        Fitted S2V encoder.
-    device_ : torch.device
-        Device used for training (CPU or CUDA).
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import S2V
     >>> X = np.random.randn(50, 200)
     >>> S2V(target_len=20, epochs=5).fit_transform(X).shape

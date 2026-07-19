@@ -54,7 +54,6 @@ class BaseReducer(BaseEstimator, TransformerMixin):
     --------
     Subclasses are instantiated like any sklearn transformer:
 
-    >>> import numpy as np
     >>> from tsreduce import PAA
     >>> X = np.random.randn(10, 200)  # 10 series of length 200
     >>> paa = PAA(target_len=50)

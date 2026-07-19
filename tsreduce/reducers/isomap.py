@@ -26,14 +26,9 @@ class Isomap(BaseReducer):
         Number of neighbours for the geodesic graph. Defaults to
         ``max(2, int(sqrt(n_samples)))`` when ``None``.
 
-    Attributes
-    ----------
-    estimators_ : list of sklearn.manifold.Isomap
-        Fitted Isomap estimator for each channel.
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import Isomap
     >>> X = np.random.randn(50, 200)
     >>> Isomap(target_len=10).fit_transform(X).shape

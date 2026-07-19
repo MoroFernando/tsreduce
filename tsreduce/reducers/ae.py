@@ -66,16 +66,9 @@ class AE(BaseReducer):
     random_state : int or None, default=None
         Random seed for reproducibility.
 
-    Attributes
-    ----------
-    model_ : torch.nn.Module
-        Fitted autoencoder.
-    device_ : torch.device
-        Device used for training (CPU or CUDA).
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import AE
     >>> X = np.random.randn(50, 200)
     >>> AE(target_len=20, epochs=5).fit_transform(X).shape

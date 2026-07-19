@@ -29,15 +29,9 @@ class DWT(BaseReducer):
     level : int, optional
         Decomposition level. Inferred from the series length when ``None``.
 
-    Attributes
-    ----------
-    channel_state_ : list of dict
-        Per-channel fit state: decomposition level and selected coefficient
-        indices.
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import DWT
     >>> X = np.random.randn(10, 200)
     >>> DWT(target_len=50).fit_transform(X).shape

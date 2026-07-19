@@ -51,14 +51,9 @@ class SVD(BaseReducer):
     center : bool, default=False
         Whether to subtract the channel mean before computing the SVD.
 
-    Attributes
-    ----------
-    estimators_ : list of _DatasetSVDEstimator
-        Fitted SVD projector for each channel.
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import SVD
     >>> X = np.random.randn(50, 200)
     >>> SVD(target_len=20).fit_transform(X).shape

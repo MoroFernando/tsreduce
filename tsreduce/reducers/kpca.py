@@ -31,14 +31,9 @@ class KPCA(BaseReducer):
     random_state : int or None, default=None
         Random seed for reproducibility.
 
-    Attributes
-    ----------
-    estimators_ : list of sklearn.decomposition.KernelPCA
-        Fitted KPCA estimator for each channel.
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import KPCA
     >>> X = np.random.randn(50, 200)
     >>> KPCA(target_len=20).fit_transform(X).shape

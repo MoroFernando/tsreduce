@@ -25,14 +25,9 @@ class PCA(BaseReducer):
     random_state : int or None, default=None
         Random seed passed to :class:`sklearn.decomposition.PCA`.
 
-    Attributes
-    ----------
-    estimators_ : list of sklearn.decomposition.PCA
-        Fitted PCA estimator for each channel.
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import PCA
     >>> X = np.random.randn(50, 200)
     >>> PCA(target_len=20).fit_transform(X).shape

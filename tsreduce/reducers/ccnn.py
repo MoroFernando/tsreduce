@@ -114,16 +114,9 @@ class CCNN(BaseReducer):
     random_state : int or None, default=None
         Random seed for reproducibility.
 
-    Attributes
-    ----------
-    model_ : torch.nn.Module
-        Fitted contrastive CNN encoder.
-    device_ : torch.device
-        Device used for training (CPU or CUDA).
 
     Examples
     --------
-    >>> import numpy as np
     >>> from tsreduce import CCNN
     >>> X = np.random.randn(50, 200)
     >>> CCNN(target_len=20, epochs=5).fit_transform(X).shape
