@@ -38,7 +38,7 @@ paa.fit(X_train)
 X_reduced = paa.transform(X_test)   # (50, 200)
 
 # Neural method with progress bar
-ae = AE(retention_rate=0.1, epochs=30, verbose=1, random_state=42)
+ae = AE(retention_rate=0.1, epochs=30, verbose=True, random_state=42)
 ae.fit(X_train)
 X_reduced = ae.transform(X_test)    # (50, 100)
 print(ae.fit_time_, ae.transform_time_)
@@ -48,22 +48,22 @@ All reducers are sklearn-compatible (`fit`, `transform`, `fit_transform`, `get_p
 
 ## Available methods
 
-| Class | Type | Description |
-|-------|------|-------------|
-| `PAA` | classical | Piecewise Aggregate Approximation — segment-mean pooling, stateless |
-| `DFT` | classical | Discrete Fourier Transform — retains lowest-frequency coefficients, stateless |
-| `DWT` | classical | Discrete Wavelet Transform — selects coefficients by energy ranking |
-| `UniformDownsampling` | classical | Picks uniformly-spaced indices from each series, stateless |
-| `PCA` | statistical | Principal Component Analysis — per-channel sklearn PCA |
-| `SVD` | statistical | Singular Value Decomposition — per-channel right singular vectors |
-| `KPCA` | statistical | Kernel PCA — non-linear per-channel embedding |
-| `Isomap` | statistical | Geodesic manifold embedding — per-channel |
-| `AE` | neural | Dense Autoencoder — fully-connected encoder–decoder |
-| `CAE` | neural | Convolutional Autoencoder — 1-D conv encoder–decoder |
-| `TAE` | neural | Transformer Autoencoder — Transformer encoder with adaptive pooling |
-| `TCN` | neural | Temporal Convolutional Network — causal dilated residual blocks |
-| `S2V` | neural | Series2Vec — dual-branch (time + frequency) contrastive encoder |
-| `CCNN` | neural | Contrastive CNN — nearest-neighbour queue contrastive learning |
+| Class | Description |
+|-------|-------------|
+| `PAA` | Piecewise Aggregate Approximation — segment-mean pooling, stateless |
+| `DFT` | Discrete Fourier Transform — retains lowest-frequency coefficients, stateless |
+| `DWT` | Discrete Wavelet Transform — selects coefficients by energy ranking |
+| `UniformDownsampling` | Picks uniformly-spaced indices from each series, stateless |
+| `PCA` | Principal Component Analysis — per-channel sklearn PCA |
+| `SVD` | Singular Value Decomposition — per-channel right singular vectors |
+| `KPCA` | Kernel PCA — non-linear per-channel embedding |
+| `Isomap` | Geodesic manifold embedding — per-channel |
+| `AE` | Dense Autoencoder — fully-connected encoder–decoder |
+| `CAE` | Convolutional Autoencoder — 1-D conv encoder–decoder |
+| `TAE` | Transformer Autoencoder — Transformer encoder with adaptive pooling |
+| `TCN` | Temporal Convolutional Network — causal dilated residual blocks |
+| `S2V` | Series2Vec — dual-branch (time + frequency) contrastive encoder |
+| `CCNN` | Contrastive CNN — nearest-neighbour queue contrastive learning |
 
 ## Extending
 
