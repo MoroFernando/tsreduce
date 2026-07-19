@@ -1,4 +1,8 @@
-"""Autoencoder (AE)"""
+"""Dense autoencoder with a fully-connected encoder–decoder.
+    The bottleneck layer has *n_timepoints_out_* units and produces the latent
+    representation. Channels are flattened into the batch axis before training
+    and restored at transform time.
+"""
 import numpy as np
 
 from ..base import BaseReducer
