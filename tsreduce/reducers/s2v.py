@@ -93,7 +93,7 @@ class S2V(BaseReducer):
         import torch
         import torch.nn as nn
         from torch.utils.data import DataLoader, TensorDataset
-        from tqdm import tqdm
+        from tqdm.auto import tqdm
 
         N = X.shape[2]
         w = self.n_timepoints_out_
