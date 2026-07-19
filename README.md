@@ -2,6 +2,8 @@
 
 Time series dimensionality reduction — from classical methods like PAA and PCA to deep learning encoders.
 
+**Documentation:** [tsreduce.readthedocs.io](https://tsreduce.readthedocs.io/)
+
 ## Installation
 
 ```bash
