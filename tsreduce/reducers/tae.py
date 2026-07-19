@@ -59,10 +59,10 @@ def _build_model(input_dim, target_len, dropout, d_model=32, n_heads=4, num_laye
 
 class TAE(BaseReducer):
 
-    def __init__(self, *, target_length=None, retention_rate=None,
+    def __init__(self, *, target_len=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,
                  verbose: int = 0, random_state=None):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
         self.epochs = epochs
         self.lr = lr
         self.batch_size = batch_size

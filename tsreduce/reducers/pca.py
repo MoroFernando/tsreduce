@@ -8,8 +8,8 @@ from ._utils import pad_or_trim, rank_capped_components
 
 class PCA(BaseReducer):
 
-    def __init__(self, *, target_length=None, retention_rate=None, random_state=None):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+    def __init__(self, *, target_len=None, retention_rate=None, random_state=None):
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
         self.random_state = random_state
 
     def _fit(self, X: np.ndarray, y=None) -> None:

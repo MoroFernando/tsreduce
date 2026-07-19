@@ -76,8 +76,8 @@ from tsreduce.base import BaseReducer
 
 class MyReducer(BaseReducer):
 
-    def __init__(self, *, target_length=None, retention_rate=None):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+    def __init__(self, *, target_len=None, retention_rate=None):
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
 
     def _fit(self, X: np.ndarray, y=None) -> None:
         # X is always (n_samples, n_channels, n_timepoints)

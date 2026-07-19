@@ -79,10 +79,10 @@ class S2V(BaseReducer):
     D_MODEL = 64
     N_HEADS = 8
 
-    def __init__(self, *, target_length=None, retention_rate=None,
+    def __init__(self, *, target_len=None, retention_rate=None,
                  emb_size=16, epochs=100, lr=1e-3, batch_size=64,
                  verbose: int = 0, random_state=None):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
         self.emb_size = emb_size
         self.epochs = epochs
         self.lr = lr

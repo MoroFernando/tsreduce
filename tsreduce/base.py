@@ -10,31 +10,31 @@ from sklearn.utils.validation import check_is_fitted
 class BaseReducer(BaseEstimator, TransformerMixin):
     """Abstract base for time-series dimensionality reducers.
 
-    Exactly one of *target_length* or *retention_rate* must be supplied.
+    Exactly one of *target_len* or *retention_rate* must be supplied.
     Subclasses only need to implement :meth:`_fit` and :meth:`_transform`;
     shape normalisation, timing, and validation are handled here.
     """
 
-    def __init__(self, *, target_length=None, retention_rate=None):
-        if target_length is None and retention_rate is None:
+    def __init__(self, *, target_len=None, retention_rate=None):
+        if target_len is None and retention_rate is None:
             raise ValueError(
-                "Provide exactly one of 'target_length' or 'retention_rate'."
+                "Provide exactly one of 'target_len' or 'retention_rate'."
             )
-        if target_length is not None and retention_rate is not None:
+        if target_len is not None and retention_rate is not None:
             raise ValueError(
-                "Provide exactly one of 'target_length' or 'retention_rate', not both."
+                "Provide exactly one of 'target_len' or 'retention_rate', not both."
             )
         if retention_rate is not None and not (0 < retention_rate <= 1):
             raise ValueError(
                 f"'retention_rate' must be in (0, 1], got {retention_rate!r}."
             )
-        if target_length is not None and (
-            not isinstance(target_length, (int, np.integer)) or target_length < 1
+        if target_len is not None and (
+            not isinstance(target_len, (int, np.integer)) or target_len < 1
         ):
             raise ValueError(
-                f"'target_length' must be a positive integer, got {target_length!r}."
+                f"'target_len' must be a positive integer, got {target_len!r}."
             )
-        self.target_length = target_length
+        self.target_len = target_len
         self.retention_rate = retention_rate
 
     # ------------------------------------------------------------------
@@ -45,8 +45,8 @@ class BaseReducer(BaseEstimator, TransformerMixin):
         X_3d = self._validate_and_reshape(X)
         n_samples, n_channels, n_timepoints = X_3d.shape
 
-        if self.target_length is not None:
-            n_timepoints_out = int(self.target_length)
+        if self.target_len is not None:
+            n_timepoints_out = int(self.target_len)
         else:
             n_timepoints_out = max(1, round(n_timepoints * self.retention_rate))
 

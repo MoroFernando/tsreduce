@@ -8,9 +8,9 @@ from ._utils import pad_or_trim, rank_capped_components
 
 class KPCA(BaseReducer):
 
-    def __init__(self, *, target_length=None, retention_rate=None,
+    def __init__(self, *, target_len=None, retention_rate=None,
                  kernel="rbf", gamma=None, random_state=None):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
         self.kernel = kernel
         self.gamma = gamma
         self.random_state = random_state

@@ -67,11 +67,11 @@ def _build_model(input_dim, target_len, n_filters, kernel_size, n_levels, latent
 
 class TCN(BaseReducer):
 
-    def __init__(self, *, target_length=None, retention_rate=None,
+    def __init__(self, *, target_len=None, retention_rate=None,
                  n_filters=20, kernel_size=20, n_levels=5, latent_channels=8,
                  dropout=0.2, epochs=50, lr=1e-3, batch_size=32,
                  verbose: int = 0, random_state=None):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
         self.n_filters = n_filters
         self.kernel_size = kernel_size
         self.n_levels = n_levels

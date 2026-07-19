@@ -31,8 +31,8 @@ class _DatasetSVDEstimator:
 
 class SVD(BaseReducer):
 
-    def __init__(self, *, target_length=None, retention_rate=None, center=False):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+    def __init__(self, *, target_len=None, retention_rate=None, center=False):
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
         self.center = center
 
     def _fit(self, X: np.ndarray, y=None) -> None:

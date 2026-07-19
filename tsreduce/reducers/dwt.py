@@ -7,8 +7,8 @@ from ..base import BaseReducer
 
 class DWT(BaseReducer):
 
-    def __init__(self, *, target_length=None, retention_rate=None, wavelet="db6", level=None):
-        super().__init__(target_length=target_length, retention_rate=retention_rate)
+    def __init__(self, *, target_len=None, retention_rate=None, wavelet="db6", level=None):
+        super().__init__(target_len=target_len, retention_rate=retention_rate)
         self.wavelet = wavelet
         self.level = level
 
