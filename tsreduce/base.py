@@ -59,6 +59,7 @@ class BaseReducer(BaseEstimator, TransformerMixin):
         self.n_timepoints_in_ = n_timepoints
         self.n_channels_in_ = n_channels
         self.n_timepoints_out_ = n_timepoints_out
+        self.retention_rate_ = n_timepoints_out / n_timepoints
 
         t0 = perf_counter()
         self._fit(X_3d, y)
