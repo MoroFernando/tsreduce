@@ -15,7 +15,6 @@ from .reducers.cae import CAE
 from .reducers.tae import TAE
 from .reducers.tcn import TCN
 from .reducers.s2v import S2V
-from .reducers.siamese import Siamese
 from .reducers.ccnn import CCNN
 
 __all__ = [
@@ -23,5 +22,5 @@ __all__ = [
     "BaseReducer",
     "PAA", "DFT", "DWT", "UniformDownsampling",
     "PCA", "SVD", "KPCA", "Isomap",
-    "AE", "CAE", "TAE", "TCN", "S2V", "Siamese", "CCNN",
+    "AE", "CAE", "TAE", "TCN", "S2V", "CCNN",
 ]
