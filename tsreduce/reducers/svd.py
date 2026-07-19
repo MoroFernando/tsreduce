@@ -30,11 +30,34 @@ class _DatasetSVDEstimator:
 
 
 class SVD(BaseReducer):
-    """Per-channel SVD projection.
+    """Per-channel Singular Value Decomposition (SVD) projection.
 
-    Learns a shared basis of right singular vectors from the training set and
-    projects each series onto it. Equivalent to PCA without centering by default;
-    set *center=True* to subtract the channel mean before decomposition.
+    Treats the training set as a matrix (samples × timepoints) per channel and
+    computes its SVD. The right singular vectors form a shared basis; each
+    series is represented by its projection coefficients onto the top components.
+    The same fitted basis is reused at transform time.
+
+    Equivalent to :class:`PCA` without centering by default; set
+    ``center=True`` to subtract the channel mean before decomposition.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Number of SVD components to retain per channel. Mutually exclusive
+        with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of components to retain. Mutually exclusive with
+        ``target_len``.
+    center : bool, default=False
+        Whether to subtract the channel mean before computing the SVD.
+
+
+    Examples
+    --------
+    >>> from tsreduce import SVD
+    >>> X = np.random.randn(50, 200)
+    >>> SVD(target_len=20).fit_transform(X).shape
+    (50, 20)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None, center=False):

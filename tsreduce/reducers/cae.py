@@ -41,12 +41,40 @@ def _build_model(input_dim, target_len, dropout):
 
 
 class CAE(BaseReducer):
-    """1-D convolutional autoencoder.
+    """1-D Convolutional Autoencoder (CAE).
 
-    Three conv layers encode each series; adaptive average pooling compresses the
-    feature map to *n_timepoints_out_* steps; a 1×1 conv collapses the channel
-    axis to produce the latent vector. The decoder mirrors the encoder with
-    linear upsampling.
+    Three Conv1d layers with ELU activations encode each series; adaptive
+    average pooling compresses the feature map to ``n_timepoints_out_`` steps;
+    a 1×1 conv collapses channels to produce the latent vector. The decoder
+    mirrors the encoder with linear upsampling and three deconv layers.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Latent sequence length. Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of timepoints to retain. Mutually exclusive with
+        ``target_len``.
+    epochs : int, default=50
+        Number of training epochs.
+    lr : float, default=1e-3
+        Learning rate for the Adam optimiser.
+    batch_size : int, default=32
+        Mini-batch size.
+    dropout : float, default=0.1
+        Dropout probability applied in encoder and decoder conv blocks.
+    verbose : bool, default=False
+        Whether to display a tqdm progress bar during training.
+    random_state : int or None, default=None
+        Random seed for reproducibility.
+
+
+    Examples
+    --------
+    >>> from tsreduce import CAE
+    >>> X = np.random.randn(50, 200)
+    >>> CAE(target_len=20, epochs=5).fit_transform(X).shape
+    (50, 20)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None,

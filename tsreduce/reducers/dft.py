@@ -5,11 +5,26 @@ from ..base import BaseReducer
 
 
 class DFT(BaseReducer):
-    """Discrete Fourier Transform compression.
+    """Discrete Fourier Transform (DFT) compression.
 
-    Retains the lowest-frequency real FFT coefficients as a feature vector
-    (DC term first, then interleaved real/imaginary parts). Stateless — fit is
-    a no-op.
+    Computes the real FFT of each series and retains the ``n_timepoints_out_``
+    lowest-frequency coefficients as a feature vector. The DC term is kept as
+    a single real value; remaining coefficients are stored as interleaved
+    (real, imaginary) pairs. Stateless — :meth:`fit` is a no-op.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Number of output features. Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of timepoints to retain. Mutually exclusive with ``target_len``.
+
+    Examples
+    --------
+    >>> from tsreduce import DFT
+    >>> X = np.random.randn(10, 200)
+    >>> DFT(target_len=50).fit_transform(X).shape
+    (10, 50)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None):

@@ -75,11 +75,42 @@ def _minmax(d):
 
 
 class S2V(BaseReducer):
-    """Series2Vec — dual-branch contrastive encoder.
+    """Series2Vec (S2V) — dual-branch contrastive distance-preserving encoder.
 
-    Encodes each series in both the time and frequency (FFT magnitude) domains
-    and trains each branch to preserve pairwise distances between series in the
-    batch. At inference only the time branch is used to produce the latent.
+    Encodes each series in parallel through a time-domain branch and a
+    frequency-domain branch (FFT magnitude spectrum). Both branches are trained
+    with a SmoothL1 loss that aligns their pairwise distance matrices with
+    those of the raw inputs, encouraging the latent space to preserve the
+    relational structure of the original series. At inference only the
+    time-domain branch is used.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Latent dimensionality. Mutually exclusive with ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of timepoints to retain. Mutually exclusive with
+        ``target_len``.
+    emb_size : int, default=16
+        Number of feature maps in the convolutional embedding layers.
+    epochs : int, default=100
+        Number of training epochs.
+    lr : float, default=1e-3
+        Learning rate for the Adam optimiser.
+    batch_size : int, default=64
+        Mini-batch size.
+    verbose : bool, default=False
+        Whether to display a tqdm progress bar during training.
+    random_state : int or None, default=None
+        Random seed for reproducibility.
+
+
+    Examples
+    --------
+    >>> from tsreduce import S2V
+    >>> X = np.random.randn(50, 200)
+    >>> S2V(target_len=20, epochs=5).fit_transform(X).shape
+    (50, 20)
     """
 
     D_MODEL = 64

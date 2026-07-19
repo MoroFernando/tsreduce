@@ -6,12 +6,36 @@ from ..base import BaseReducer
 
 
 class DWT(BaseReducer):
-    """Discrete Wavelet Transform with energy-ranked coefficient selection.
+    """Discrete Wavelet Transform (DWT) with energy-ranked coefficient selection.
 
-    Decomposes each channel of the training set and keeps the *n_timepoints_out_*
-    coefficients with the highest average energy. The same indices are applied at
-    transform time. Defaults to Daubechies-6 wavelets; *level* is inferred from
-    the series length when not supplied.
+    Decomposes each series using a multi-level wavelet transform and selects
+    the ``n_timepoints_out_`` coefficients with the highest average energy
+    across the training set. The same coefficient indices are reused at
+    transform time, making the selection data-dependent.
+
+    Defaults to Daubechies-6 wavelets (``wavelet='db6'``); the decomposition
+    level is inferred from the series length when not provided.
+
+    Parameters
+    ----------
+    target_len : int, optional
+        Number of wavelet coefficients to retain. Mutually exclusive with
+        ``retention_rate``.
+    retention_rate : float, optional
+        Fraction of coefficients to retain. Mutually exclusive with
+        ``target_len``.
+    wavelet : str, default='db6'
+        Wavelet family name, as accepted by :func:`pywt.wavedec`.
+    level : int, optional
+        Decomposition level. Inferred from the series length when ``None``.
+
+
+    Examples
+    --------
+    >>> from tsreduce import DWT
+    >>> X = np.random.randn(10, 200)
+    >>> DWT(target_len=50).fit_transform(X).shape
+    (10, 50)
     """
 
     def __init__(self, *, target_len=None, retention_rate=None, wavelet="db6", level=None):
