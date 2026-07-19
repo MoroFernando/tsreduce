@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-07-19
+
+### Added
+- `DFT` — Discrete Fourier Transform (stateless)
+- `DWT` — Discrete Wavelet Transform with energy-based coefficient selection
+- `UniformDownsampling` — uniform index-based downsampling (stateless)
+- `SVD` — Singular Value Decomposition (per-channel)
+- `KPCA` — Kernel PCA (per-channel)
+- `Isomap` — geodesic manifold embedding (per-channel)
+- `CAE` — Convolutional Autoencoder
+- `TAE` — Transformer Autoencoder
+- `TCN` — Temporal Convolutional Network encoder
+- `S2V` — Series2Vec dual-branch contrastive encoder
+- `Siamese` — pairwise distance-regression encoder
+- `CCNN` — Contrastive CNN encoder
+
 ## [0.1.0] - 2025-07-19
 
 ### Added
