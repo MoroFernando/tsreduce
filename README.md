@@ -1,41 +1,26 @@
-# tsreduce
+# TSreduce
 
 Time series dimensionality reduction — from classical methods like PAA and PCA to deep learning encoders.
 
 ## Installation
 
 ```bash
-pip install tsreduce
+pip install git+https://github.com/MoroFernando/tsreduce.git
 ```
 
-## Local development
-
-### With conda
+### Local development
 
 ```bash
+# conda
 conda create -n tsreduce python=3.10 -y
 conda activate tsreduce
 pip install -e .
-```
 
-### With venv
-
-```bash
+# venv
 python -m venv .venv
-
-# Linux/macOS
-source .venv/bin/activate
-
-# Windows
-.venv\Scripts\activate
-
+source .venv/bin/activate   # Linux/macOS
+.venv\Scripts\activate      # Windows
 pip install -e .
-```
-
-### Development tools
-
-```bash
-pip install -r requirements-dev.txt
 ```
 
 ## Usage
@@ -47,29 +32,42 @@ from tsreduce import PAA, AE
 X_train = np.random.randn(200, 1000)
 X_test  = np.random.randn(50,  1000)
 
+# Classical method
 paa = PAA(retention_rate=0.2)
 paa.fit(X_train)
 X_reduced = paa.transform(X_test)   # (50, 200)
 
-ae = AE(retention_rate=0.1, epochs=30, random_state=42)
+# Neural method with progress bar
+ae = AE(retention_rate=0.1, epochs=30, verbose=1, random_state=42)
 ae.fit(X_train)
 X_reduced = ae.transform(X_test)    # (50, 100)
-print(ae.fit_time_)
+print(ae.fit_time_, ae.transform_time_)
 ```
-
-## Available methods
-
-| Name | Class | Description |
-|------|-------|-------------|
-| PAA  | `tsreduce.PAA` | Piecewise Aggregate Approximation — segment-mean pooling, stateless |
-| PCA  | `tsreduce.PCA` | Principal Component Analysis — per-channel sklearn PCA |
-| AE   | `tsreduce.AE`  | Dense Autoencoder — learns a compressed latent representation |
 
 All reducers are sklearn-compatible (`fit`, `transform`, `fit_transform`, `get_params`, `set_params`) and accept both 2-D `(n_samples, n_timepoints)` and 3-D `(n_samples, n_channels, n_timepoints)` inputs.
 
-## Adding a new method
+## Available methods
 
-Subclass `BaseReducer` and implement `_fit` and `_transform`. Both receive and must return 3-D arrays; 2-D normalisation, shape validation, and timing are handled by the base class.
+| Class | Type | Description |
+|-------|------|-------------|
+| `PAA` | classical | Piecewise Aggregate Approximation — segment-mean pooling, stateless |
+| `DFT` | classical | Discrete Fourier Transform — retains lowest-frequency coefficients, stateless |
+| `DWT` | classical | Discrete Wavelet Transform — selects coefficients by energy ranking |
+| `UniformDownsampling` | classical | Picks uniformly-spaced indices from each series, stateless |
+| `PCA` | statistical | Principal Component Analysis — per-channel sklearn PCA |
+| `SVD` | statistical | Singular Value Decomposition — per-channel right singular vectors |
+| `KPCA` | statistical | Kernel PCA — non-linear per-channel embedding |
+| `Isomap` | statistical | Geodesic manifold embedding — per-channel |
+| `AE` | neural | Dense Autoencoder — fully-connected encoder–decoder |
+| `CAE` | neural | Convolutional Autoencoder — 1-D conv encoder–decoder |
+| `TAE` | neural | Transformer Autoencoder — Transformer encoder with adaptive pooling |
+| `TCN` | neural | Temporal Convolutional Network — causal dilated residual blocks |
+| `S2V` | neural | Series2Vec — dual-branch (time + frequency) contrastive encoder |
+| `CCNN` | neural | Contrastive CNN — nearest-neighbour queue contrastive learning |
+
+## Extending
+
+Subclass `BaseReducer` and implement `_fit` and `_transform`. Both receive 3-D arrays; 2-D normalisation, shape validation, and timing are handled by the base class. `y` is forwarded from `fit()` and available for supervised methods.
 
 ```python
 import numpy as np
@@ -81,7 +79,7 @@ class MyReducer(BaseReducer):
     def __init__(self, *, target_length=None, retention_rate=None):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         # X is always (n_samples, n_channels, n_timepoints)
         pass  # stateless example
 
@@ -92,3 +90,5 @@ class MyReducer(BaseReducer):
         step = n_timepoints // w
         return X[:, :, ::step][:, :, :w]
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
