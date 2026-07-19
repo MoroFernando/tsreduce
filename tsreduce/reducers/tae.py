@@ -61,13 +61,12 @@ class TAE(BaseReducer):
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,
-                 verbose: int = 0, random_state=None):
-        super().__init__(target_len=target_len, retention_rate=retention_rate)
+                 verbose: bool = False, random_state=None):
+        super().__init__(target_len=target_len, retention_rate=retention_rate, verbose=verbose)
         self.epochs = epochs
         self.lr = lr
         self.batch_size = batch_size
         self.dropout = dropout
-        self.verbose = verbose
         self.random_state = random_state
 
     def _fit(self, X: np.ndarray, y=None) -> None:

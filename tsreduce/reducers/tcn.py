@@ -70,8 +70,8 @@ class TCN(BaseReducer):
     def __init__(self, *, target_len=None, retention_rate=None,
                  n_filters=20, kernel_size=20, n_levels=5, latent_channels=8,
                  dropout=0.2, epochs=50, lr=1e-3, batch_size=32,
-                 verbose: int = 0, random_state=None):
-        super().__init__(target_len=target_len, retention_rate=retention_rate)
+                 verbose: bool = False, random_state=None):
+        super().__init__(target_len=target_len, retention_rate=retention_rate, verbose=verbose)
         self.n_filters = n_filters
         self.kernel_size = kernel_size
         self.n_levels = n_levels
@@ -80,7 +80,6 @@ class TCN(BaseReducer):
         self.epochs = epochs
         self.lr = lr
         self.batch_size = batch_size
-        self.verbose = verbose
         self.random_state = random_state
 
     def _fit(self, X: np.ndarray, y=None) -> None:

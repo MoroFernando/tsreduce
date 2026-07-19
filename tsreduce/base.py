@@ -15,7 +15,7 @@ class BaseReducer(BaseEstimator, TransformerMixin):
     shape normalisation, timing, and validation are handled here.
     """
 
-    def __init__(self, *, target_len=None, retention_rate=None):
+    def __init__(self, *, target_len=None, retention_rate=None, verbose: bool = False):
         if target_len is None and retention_rate is None:
             raise ValueError(
                 "Provide exactly one of 'target_len' or 'retention_rate'."
@@ -36,6 +36,7 @@ class BaseReducer(BaseEstimator, TransformerMixin):
             )
         self.target_len = target_len
         self.retention_rate = retention_rate
+        self.verbose = verbose
 
     # ------------------------------------------------------------------
     # sklearn-compatible fit / transform

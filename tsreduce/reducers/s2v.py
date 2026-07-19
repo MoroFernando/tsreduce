@@ -81,13 +81,12 @@ class S2V(BaseReducer):
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  emb_size=16, epochs=100, lr=1e-3, batch_size=64,
-                 verbose: int = 0, random_state=None):
-        super().__init__(target_len=target_len, retention_rate=retention_rate)
+                 verbose: bool = False, random_state=None):
+        super().__init__(target_len=target_len, retention_rate=retention_rate, verbose=verbose)
         self.emb_size = emb_size
         self.epochs = epochs
         self.lr = lr
         self.batch_size = batch_size
-        self.verbose = verbose
         self.random_state = random_state
 
     def _fit(self, X: np.ndarray, y=None) -> None:
