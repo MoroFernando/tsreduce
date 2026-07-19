@@ -12,7 +12,7 @@ class DWT(BaseReducer):
         self.wavelet = wavelet
         self.level = level
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         w = self.n_timepoints_out_
         self.channel_state_ = [
             self._fit_channel(X[:, c, :], w) for c in range(X.shape[1])

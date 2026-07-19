@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-19
+
+### Added
+- `_fit(X, y=None)` signature on `BaseReducer` and all 15 reducers — supervised methods can now use labels; unsupervised methods ignore `y`
+
+### Changed
+- Neural methods (AE, CAE, TAE, TCN, S2V, Siamese, CCNN) now display average epoch loss in the tqdm bar via `set_postfix(loss=...)`
+
 ## [0.2.0] - 2025-07-19
 
 ### Added

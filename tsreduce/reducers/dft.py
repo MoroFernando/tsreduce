@@ -9,7 +9,7 @@ class DFT(BaseReducer):
     def __init__(self, *, target_length=None, retention_rate=None):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         pass
 
     def _transform(self, X: np.ndarray) -> np.ndarray:

@@ -81,7 +81,7 @@ class S2V(BaseReducer):
 
     def __init__(self, *, target_length=None, retention_rate=None,
                  emb_size=16, epochs=100, lr=1e-3, batch_size=64,
-                 verbose=0, random_state=None):
+                 verbose: int = 0, random_state=None):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
         self.emb_size = emb_size
         self.epochs = epochs
@@ -90,11 +90,11 @@ class S2V(BaseReducer):
         self.verbose = verbose
         self.random_state = random_state
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         import torch
         import torch.nn as nn
         from torch.utils.data import DataLoader, TensorDataset
-        from tqdm.auto import tqdm
+        from tqdm import tqdm
 
         N = X.shape[2]
         w = self.n_timepoints_out_
@@ -120,23 +120,28 @@ class S2V(BaseReducer):
         criterion = nn.SmoothL1Loss()
 
         self.model_.train()
-        for _ in tqdm(range(self.epochs), desc="S2V fit", disable=not self.verbose):
-            for x_t_batch, x_f_batch in loader:
-                B = x_t_batch.size(0)
-                if B < 2:
-                    continue
-                optimizer.zero_grad()
-                d_rep_t, d_rep_f = self.model_(x_t_batch, x_f_batch)
-                d_in_t = torch.cdist(x_t_batch.view(B, -1), x_t_batch.view(B, -1))
-                d_in_f = torch.cdist(x_f_batch.view(B, -1), x_f_batch.view(B, -1))
-                tril = torch.tril_indices(B, B, offset=-1)
-                loss = (
-                    criterion(_minmax(d_rep_t[tril[0], tril[1]]), _minmax(d_in_t[tril[0], tril[1]]))
-                    + criterion(_minmax(d_rep_f[tril[0], tril[1]]), _minmax(d_in_f[tril[0], tril[1]]))
-                )
-                loss.backward()
-                nn.utils.clip_grad_norm_(self.model_.parameters(), max_norm=4.0)
-                optimizer.step()
+        with tqdm(range(self.epochs), desc="S2V", disable=not self.verbose) as pbar:
+            for _ in pbar:
+                epoch_loss = 0.0
+                for x_t_batch, x_f_batch in loader:
+                    B = x_t_batch.size(0)
+                    if B < 2:
+                        continue
+                    optimizer.zero_grad()
+                    d_rep_t, d_rep_f = self.model_(x_t_batch, x_f_batch)
+                    d_in_t = torch.cdist(x_t_batch.view(B, -1), x_t_batch.view(B, -1))
+                    d_in_f = torch.cdist(x_f_batch.view(B, -1), x_f_batch.view(B, -1))
+                    tril = torch.tril_indices(B, B, offset=-1)
+                    loss = (
+                        criterion(_minmax(d_rep_t[tril[0], tril[1]]), _minmax(d_in_t[tril[0], tril[1]]))
+                        + criterion(_minmax(d_rep_f[tril[0], tril[1]]), _minmax(d_in_f[tril[0], tril[1]]))
+                    )
+                    loss.backward()
+                    nn.utils.clip_grad_norm_(self.model_.parameters(), max_norm=4.0)
+                    optimizer.step()
+                    epoch_loss += loss.item()
+                if epoch_loss > 0:
+                    pbar.set_postfix(loss=f"{epoch_loss / len(loader):.4f}")
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()

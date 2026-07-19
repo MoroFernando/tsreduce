@@ -47,7 +47,7 @@ class Siamese(BaseReducer):
 
     def __init__(self, *, target_length=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,
-                 verbose=0, random_state=None):
+                 verbose: int = 0, random_state=None):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
         self.epochs = epochs
         self.lr = lr
@@ -56,11 +56,11 @@ class Siamese(BaseReducer):
         self.verbose = verbose
         self.random_state = random_state
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         import torch
         import torch.nn.functional as F
         from torch.utils.data import DataLoader, TensorDataset
-        from tqdm.auto import tqdm
+        from tqdm import tqdm
 
         N = X.shape[2]
         w = self.n_timepoints_out_
@@ -77,22 +77,26 @@ class Siamese(BaseReducer):
         optimizer = torch.optim.Adam(self.model_.parameters(), lr=self.lr)
 
         self.model_.train()
-        for _ in tqdm(range(self.epochs), desc="Siamese fit", disable=not self.verbose):
-            for (batch,) in loader:
-                if batch.shape[0] < 2:
-                    continue
-                optimizer.zero_grad()
-                z = self.model_(batch)
-                with torch.no_grad():
-                    dist_raw = _pairwise_distance(batch)
-                dist_emb = _pairwise_distance(z)
-                mask = torch.tril(torch.ones_like(dist_emb), diagonal=-1).bool()
-                loss = F.smooth_l1_loss(
-                    _normalize_distance(torch.masked_select(dist_emb, mask)),
-                    _normalize_distance(torch.masked_select(dist_raw, mask)),
-                )
-                loss.backward()
-                optimizer.step()
+        with tqdm(range(self.epochs), desc="Siamese", disable=not self.verbose) as pbar:
+            for _ in pbar:
+                epoch_loss = 0.0
+                for (batch,) in loader:
+                    if batch.shape[0] < 2:
+                        continue
+                    optimizer.zero_grad()
+                    z = self.model_(batch)
+                    with torch.no_grad():
+                        dist_raw = _pairwise_distance(batch)
+                    dist_emb = _pairwise_distance(z)
+                    mask = torch.tril(torch.ones_like(dist_emb), diagonal=-1).bool()
+                    loss = F.smooth_l1_loss(
+                        _normalize_distance(torch.masked_select(dist_emb, mask)),
+                        _normalize_distance(torch.masked_select(dist_raw, mask)),
+                    )
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss += loss.item()
+                pbar.set_postfix(loss=f"{epoch_loss / max(len(loader), 1):.4f}")
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()

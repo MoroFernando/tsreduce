@@ -15,7 +15,7 @@ class KPCA(BaseReducer):
         self.gamma = gamma
         self.random_state = random_state
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         w = self.n_timepoints_out_
         self.estimators_ = []
         for c in range(X.shape[1]):

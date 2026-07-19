@@ -70,7 +70,7 @@ class TCN(BaseReducer):
     def __init__(self, *, target_length=None, retention_rate=None,
                  n_filters=20, kernel_size=20, n_levels=5, latent_channels=8,
                  dropout=0.2, epochs=50, lr=1e-3, batch_size=32,
-                 verbose=0, random_state=None):
+                 verbose: int = 0, random_state=None):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
         self.n_filters = n_filters
         self.kernel_size = kernel_size
@@ -83,11 +83,11 @@ class TCN(BaseReducer):
         self.verbose = verbose
         self.random_state = random_state
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         import torch
         import torch.nn as nn
         from torch.utils.data import DataLoader, TensorDataset
-        from tqdm.auto import tqdm
+        from tqdm import tqdm
 
         N = X.shape[2]
         w = self.n_timepoints_out_
@@ -108,13 +108,17 @@ class TCN(BaseReducer):
         criterion = nn.MSELoss()
 
         self.model_.train()
-        for _ in tqdm(range(self.epochs), desc="TCN fit", disable=not self.verbose):
-            for (batch,) in loader:
-                optimizer.zero_grad()
-                recon, _ = self.model_(batch)
-                loss = criterion(recon, batch)
-                loss.backward()
-                optimizer.step()
+        with tqdm(range(self.epochs), desc="TCN", disable=not self.verbose) as pbar:
+            for _ in pbar:
+                epoch_loss = 0.0
+                for (batch,) in loader:
+                    optimizer.zero_grad()
+                    recon, _ = self.model_(batch)
+                    loss = criterion(recon, batch)
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss += loss.item()
+                pbar.set_postfix(loss=f"{epoch_loss / len(loader):.4f}")
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()

@@ -12,7 +12,7 @@ class Isomap(BaseReducer):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
         self.n_neighbors = n_neighbors
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         w = self.n_timepoints_out_
         self.estimators_ = [
             self._fit_channel(w, X[:, c, :]) for c in range(X.shape[1])

@@ -35,7 +35,7 @@ class SVD(BaseReducer):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
         self.center = center
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         w = self.n_timepoints_out_
         self.estimators_ = []
         for c in range(X.shape[1]):

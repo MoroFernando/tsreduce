@@ -88,7 +88,7 @@ class CCNN(BaseReducer):
 
     def __init__(self, *, target_length=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,
-                 verbose=0, random_state=None):
+                 verbose: int = 0, random_state=None):
         super().__init__(target_length=target_length, retention_rate=retention_rate)
         self.epochs = epochs
         self.lr = lr
@@ -97,10 +97,10 @@ class CCNN(BaseReducer):
         self.verbose = verbose
         self.random_state = random_state
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         import torch
         from torch.utils.data import DataLoader, TensorDataset
-        from tqdm.auto import tqdm
+        from tqdm import tqdm
 
         N = X.shape[2]
         w = self.n_timepoints_out_
@@ -116,12 +116,16 @@ class CCNN(BaseReducer):
         optimizer = torch.optim.Adam(self.model_.parameters(), lr=self.lr)
 
         self.model_.train()
-        for _ in tqdm(range(self.epochs), desc="CCNN fit", disable=not self.verbose):
-            for (batch,) in loader:
-                optimizer.zero_grad()
-                _, loss = self.model_(batch)
-                loss.backward()
-                optimizer.step()
+        with tqdm(range(self.epochs), desc="CCNN", disable=not self.verbose) as pbar:
+            for _ in pbar:
+                epoch_loss = 0.0
+                for (batch,) in loader:
+                    optimizer.zero_grad()
+                    _, loss = self.model_(batch)
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss += loss.item()
+                pbar.set_postfix(loss=f"{epoch_loss / len(loader):.4f}")
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()

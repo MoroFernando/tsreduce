@@ -61,7 +61,7 @@ class BaseReducer(BaseEstimator, TransformerMixin):
         self.n_timepoints_out_ = n_timepoints_out
 
         t0 = perf_counter()
-        self._fit(X_3d)
+        self._fit(X_3d, y)
         self.fit_time_ = perf_counter() - t0
 
         return self
@@ -108,8 +108,12 @@ class BaseReducer(BaseEstimator, TransformerMixin):
     # ------------------------------------------------------------------
 
     @abstractmethod
-    def _fit(self, X: np.ndarray) -> None:
-        """Fit on 3-D X (n_samples, n_channels, n_timepoints). No-op if stateless."""
+    def _fit(self, X: np.ndarray, y=None) -> None:
+        """Fit on 3-D X (n_samples, n_channels, n_timepoints). No-op if stateless.
+
+        y is forwarded from fit() and may be used by supervised subclasses.
+        Unsupervised methods can ignore it.
+        """
 
     @abstractmethod
     def _transform(self, X: np.ndarray) -> np.ndarray:

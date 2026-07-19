@@ -50,11 +50,11 @@ class AE(BaseReducer):
         self.verbose = verbose
         self.random_state = random_state
 
-    def _fit(self, X: np.ndarray) -> None:
+    def _fit(self, X: np.ndarray, y=None) -> None:
         import torch
         import torch.nn as nn
         from torch.utils.data import DataLoader, TensorDataset
-        from tqdm.auto import tqdm
+        from tqdm import tqdm
 
         N = X.shape[2]
         w = self.n_timepoints_out_
@@ -77,17 +77,18 @@ class AE(BaseReducer):
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=self.epochs)
 
         self.model_.train()
-        for epoch in tqdm(range(self.epochs), desc="AE fit", disable=not self.verbose):
-            epoch_loss = 0.0
-            for (batch,) in loader:
-                optimizer.zero_grad()
-                recon, _ = self.model_(batch)
-                loss = criterion(recon, batch)
-                loss.backward()
-                optimizer.step()
-                epoch_loss += loss.item()
-
-            scheduler.step()
+        with tqdm(range(self.epochs), desc="AE", disable=not self.verbose) as pbar:
+            for _ in pbar:
+                epoch_loss = 0.0
+                for (batch,) in loader:
+                    optimizer.zero_grad()
+                    recon, _ = self.model_(batch)
+                    loss = criterion(recon, batch)
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss += loss.item()
+                scheduler.step()
+                pbar.set_postfix(loss=f"{epoch_loss / len(loader):.4f}")
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
