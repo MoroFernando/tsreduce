@@ -1,0 +1,4 @@
+# Development-only dependencies.
+# Runtime dependencies are declared in pyproject.toml.
+
+ruff>=0.4
