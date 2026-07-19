@@ -7,6 +7,12 @@ from ._utils import pad_or_trim, rank_capped_components
 
 
 class KPCA(BaseReducer):
+    """Per-channel Kernel PCA.
+
+    Applies a non-linear embedding independently to each channel using sklearn's
+    KernelPCA. Defaults to the RBF kernel; *gamma* is inferred by sklearn when
+    not supplied. The component count is capped at the channel matrix rank.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  kernel="rbf", gamma=None, random_state=None):

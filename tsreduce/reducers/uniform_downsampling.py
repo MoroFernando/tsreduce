@@ -5,6 +5,11 @@ from ..base import BaseReducer
 
 
 class UniformDownsampling(BaseReducer):
+    """Uniform index sampling along the time axis.
+
+    Picks *n_timepoints_out_* linearly-spaced indices from each series. No
+    smoothing or averaging — just index selection. Stateless — fit is a no-op.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None):
         super().__init__(target_len=target_len, retention_rate=retention_rate)

@@ -75,6 +75,12 @@ def _minmax(d):
 
 
 class S2V(BaseReducer):
+    """Series2Vec — dual-branch contrastive encoder.
+
+    Encodes each series in both the time and frequency (FFT magnitude) domains
+    and trains each branch to preserve pairwise distances between series in the
+    batch. At inference only the time branch is used to produce the latent.
+    """
 
     D_MODEL = 64
     N_HEADS = 8

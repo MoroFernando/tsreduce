@@ -30,6 +30,12 @@ class _DatasetSVDEstimator:
 
 
 class SVD(BaseReducer):
+    """Per-channel SVD projection.
+
+    Learns a shared basis of right singular vectors from the training set and
+    projects each series onto it. Equivalent to PCA without centering by default;
+    set *center=True* to subtract the channel mean before decomposition.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None, center=False):
         super().__init__(target_len=target_len, retention_rate=retention_rate)

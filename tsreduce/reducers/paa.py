@@ -6,6 +6,11 @@ from ..base import BaseReducer
 
 
 class PAA(BaseReducer):
+    """Piecewise Aggregate Approximation.
+
+    Divides each series into *n_timepoints_out_* equal-width windows and returns
+    their mean. Stateless — fit is a no-op.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None):
         super().__init__(target_len=target_len, retention_rate=retention_rate)

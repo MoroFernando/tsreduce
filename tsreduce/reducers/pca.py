@@ -7,6 +7,12 @@ from ._utils import pad_or_trim, rank_capped_components
 
 
 class PCA(BaseReducer):
+    """Per-channel Principal Component Analysis.
+
+    Fits a separate sklearn PCA on each channel of the training set and projects
+    it onto its top principal components. The number of components is capped at
+    the rank of the channel matrix.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None, random_state=None):
         super().__init__(target_len=target_len, retention_rate=retention_rate)

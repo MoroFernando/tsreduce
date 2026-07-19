@@ -58,6 +58,12 @@ def _build_model(input_dim, target_len, dropout, d_model=32, n_heads=4, num_laye
 
 
 class TAE(BaseReducer):
+    """Transformer autoencoder with sinusoidal positional encoding.
+
+    A Transformer encoder with adaptive average pooling compresses the sequence
+    to *n_timepoints_out_* steps; a symmetric Transformer decoder reconstructs
+    the original length for the reconstruction loss.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,

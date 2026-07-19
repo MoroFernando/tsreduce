@@ -38,6 +38,12 @@ def _build_model(input_dim, latent_dim, dropout):
 
 
 class AE(BaseReducer):
+    """Dense autoencoder with a fully-connected encoder–decoder.
+
+    The bottleneck layer has *n_timepoints_out_* units and produces the latent
+    representation. Channels are flattened into the batch axis before training
+    and restored at transform time.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,

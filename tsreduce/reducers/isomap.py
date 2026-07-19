@@ -7,6 +7,12 @@ from ._utils import pad_or_trim
 
 
 class Isomap(BaseReducer):
+    """Per-channel geodesic manifold embedding.
+
+    Fits sklearn Isomap on each channel. *n_neighbors* defaults to
+    ``sqrt(n_samples)``; the component count is backed off automatically if
+    the geodesic distance matrix has significant negative eigenvalues.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None, n_neighbors=None):
         super().__init__(target_len=target_len, retention_rate=retention_rate)

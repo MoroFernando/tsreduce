@@ -5,6 +5,12 @@ from ..base import BaseReducer
 
 
 class DFT(BaseReducer):
+    """Discrete Fourier Transform compression.
+
+    Retains the lowest-frequency real FFT coefficients as a feature vector
+    (DC term first, then interleaved real/imaginary parts). Stateless — fit is
+    a no-op.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None):
         super().__init__(target_len=target_len, retention_rate=retention_rate)

@@ -66,6 +66,13 @@ def _build_model(input_dim, target_len, n_filters, kernel_size, n_levels, latent
 
 
 class TCN(BaseReducer):
+    """Temporal Convolutional Network autoencoder.
+
+    Causal dilated residual blocks encode the series; adaptive average pooling
+    compresses the latent to *n_timepoints_out_* steps. The latent sign is
+    corrected at transform time to stay aligned with a uniform subsample of the
+    original, preventing orientation flips across runs.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  n_filters=20, kernel_size=20, n_levels=5, latent_channels=8,

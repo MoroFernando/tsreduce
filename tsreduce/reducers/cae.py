@@ -41,6 +41,13 @@ def _build_model(input_dim, target_len, dropout):
 
 
 class CAE(BaseReducer):
+    """1-D convolutional autoencoder.
+
+    Three conv layers encode each series; adaptive average pooling compresses the
+    feature map to *n_timepoints_out_* steps; a 1×1 conv collapses the channel
+    axis to produce the latent vector. The decoder mirrors the encoder with
+    linear upsampling.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,

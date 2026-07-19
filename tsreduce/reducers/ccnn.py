@@ -85,6 +85,13 @@ def _build_model(input_dim, target_len, dropout, queue_size=5000, temperature=0.
 
 
 class CCNN(BaseReducer):
+    """Contrastive CNN with a nearest-neighbour feature queue.
+
+    A convolutional encoder is trained by aligning each augmented view with the
+    nearest neighbour retrieved from a momentum feature queue, using symmetric
+    cross-entropy contrastive loss. The queue accumulates normalised features
+    across batches.
+    """
 
     def __init__(self, *, target_len=None, retention_rate=None,
                  epochs=50, lr=1e-3, batch_size=32, dropout=0.1,
